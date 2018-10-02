@@ -20,24 +20,21 @@ def load_model(embeddings_file):
     return emb_model
 
 
-def jaccard(set_1, set_2):
-    n = len(set_1.intersection(set_2))
-    return n / float(len(set_1) + len(set_2) - n)
+def jaccard(list0, list1):
+    set_0 = set(list0)
+    set_1 = set(list1)
+    n = len(set_0.intersection(set_1))
+    return n / (len(set_0) + len(set_1) - n)
 
 
-def jaccard_f(words, models, row=10):
-    distances = {}
-    for word in words:
-        distances[word] = {}
-        associations = {}
-        for m in models:
-            model = models[m]
-            word_neighbors = [i[0] for i in model.most_similar(positive=[word], topn=row)]
-            associations[m.replace('.model', '')] = set(word_neighbors)
-        for pair in combinations(associations.keys(), 2):
-            similarity = jaccard(associations[pair[0]], associations[pair[1]])
-            if len(associations.keys()) > 2:
-                distances[word]['-'.join(pair)] = similarity
-            else:
-                distances[word] = similarity
-    return distances
+def jaccard_f(word, models, row=10):
+    associations = {}
+    similarities = {word: {}}
+    for m in models:
+        model = models[m]
+        word_neighbors = [i[0] for i in model.most_similar(positive=[word], topn=row)]
+        associations[m] = word_neighbors
+    for pair in combinations(associations.keys(), 2):
+        similarity = jaccard(associations[pair[0]], associations[pair[1]])
+        similarities[word]['-'.join(pair)] = similarity
+    return similarities, associations
