@@ -5,8 +5,7 @@ import logging
 import argparse
 from helpers import load_model, jaccard_f
 
-# Небольшой скрипт с примерами того, что можно делать с дистрибутивными моделями в Gensim
-# Модели можно найти на http://rusvectores.org/news_history/models/
+# Скрипт для сравнения ближайших ассоциатов слова в нескольких моделях
 
 if __name__ == '__main__':
     # Настраиваем логирование:
