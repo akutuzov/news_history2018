@@ -3,7 +3,9 @@
 
 import logging
 import argparse
-from helpers import load_model, jaccard_f
+from collections import OrderedDict
+from helpers import load_model, jaccard_f, plot_diffs
+from prettytable import PrettyTable
 
 # Скрипт для сравнения ближайших ассоциатов слова в нескольких моделях
 
@@ -19,7 +21,7 @@ if __name__ == '__main__':
 
     embeddings_files = args.models.split(',')  # Файлы, содержащие word embedding модели, через запятую
 
-    models = {}
+    models = OrderedDict()
     for modelfile in embeddings_files:
         logger.info('Загрузка модели %s...' % modelfile)
         emb_model = load_model(modelfile)
@@ -43,12 +45,17 @@ if __name__ == '__main__':
             similarities, associations = jaccard_f(word, models)
             logger.info('Ближайшие ассоциаты слова в загруженных моделях:')
             print('==========')
-            print('\t'.join(associations.keys()))
+            table = PrettyTable(associations)
             for pos in range(9):
-                for mod in associations.keys():
-                    print(associations[mod][pos], end='\t')
-                print('')
-            logger.info('Близости по коэффициенту Жаккара:')
+                table.add_row([associations[mod][pos] for mod in associations])
+            print(table)
+            logger.info('Разница с предыдущим годом по коэффициенту Жаккара:')
+            years = []
+            diffs = []
             for sim in similarities[word]:
-                print(sim, round(similarities[word][sim], 2))
+                diff = 1 - similarities[word][sim]
+                print(sim, round(diff, 2))
+                years.append(sim)
+                diffs.append(diff)
+            plot_diffs(years, diffs, word)
             print('==========')

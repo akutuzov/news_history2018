@@ -2,7 +2,8 @@
 # coding: utf-8
 
 import gensim
-from itertools import combinations
+from collections import OrderedDict
+import matplotlib.pyplot as plt
 
 
 def load_model(embeddings_file):
@@ -28,13 +29,27 @@ def jaccard(list0, list1):
 
 
 def jaccard_f(word, models, row=10):
-    associations = {}
-    similarities = {word: {}}
+    associations = OrderedDict()
+    similarities = {word: OrderedDict()}
+    previous_state = None
     for m in models:
         model = models[m]
         word_neighbors = [i[0] for i in model.most_similar(positive=[word], topn=row)]
         associations[m] = word_neighbors
-    for pair in combinations(associations.keys(), 2):
-        similarity = jaccard(associations[pair[0]], associations[pair[1]])
-        similarities[word]['-'.join(pair)] = similarity
+        if previous_state:
+            similarity = jaccard(previous_state[1], word_neighbors)
+            similarities[word][m] = similarity
+        previous_state = (m, word_neighbors)
     return similarities, associations
+
+
+def plot_diffs(years, diffs, word, savefigure=False):
+    plt.figure(1)
+    plt.plot(years, diffs, 'bo--', linewidth=2)
+    plt.xlabel('Годы')
+    plt.ylabel('Расстояние Жаккара по сравнению с предыдущим годом')
+    plt.title('Изменения в значении слова "%s"' % word)
+    if savefigure:
+        plt.savefig(savefigure)
+    else:
+        plt.show()

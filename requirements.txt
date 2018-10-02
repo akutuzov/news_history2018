@@ -1,3 +1,5 @@
 gensim
 logging
 argparse
+matplotlib
+prettytable
