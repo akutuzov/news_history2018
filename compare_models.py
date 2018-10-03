@@ -4,7 +4,7 @@
 import logging
 import argparse
 from collections import OrderedDict
-from helpers import load_model, jaccard_f, plot_diffs
+from helpers import load_model, jaccard_f, plot_diffs, visual, wordvectors
 from prettytable import PrettyTable
 
 # Скрипт для сравнения ближайших ассоциатов слова в нескольких моделях
@@ -49,6 +49,19 @@ if __name__ == '__main__':
             for pos in range(9):
                 table.add_row([associations[mod][pos] for mod in associations])
             print(table)
+
+            wordslists = []
+            matrices = []
+            modelnames = []
+            for model in associations:
+                words = [word] + associations[model]
+                matrix = wordvectors(words, models[model])
+                wordslists.append(words)
+                matrices.append(matrix)
+                modelnames.append(model)
+
+            visual(word, wordslists, matrices, modelnames)
+
             logger.info('Разница с предыдущим годом по коэффициенту Жаккара:')
             years = []
             diffs = []

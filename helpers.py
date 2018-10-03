@@ -1,9 +1,11 @@
 #! python3
 # coding: utf-8
 
+import numpy as np
 import gensim
 from collections import OrderedDict
 import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
 
 
 def load_model(embeddings_file):
@@ -53,3 +55,47 @@ def plot_diffs(years, diffs, word, savefigure=False):
         plt.savefig(savefigure)
     else:
         plt.show()
+
+
+def visual(focusword, wordslists, matrices, usermodels):
+    fig = plt.figure()
+    for words, matrix, usermodel, nr in zip(wordslists, matrices, usermodels, range(len(wordslists))):
+        pca = PCA(n_components=2)
+        y = pca.fit_transform(matrix)
+
+        xpositions = y[:, 0]
+        ypositions = y[:, 1]
+
+        if len(wordslists) <= 4:
+            rows = 2
+            columns = 2
+        elif 4 < len(wordslists) < 7:
+            rows = 2
+            columns = 3
+        else:
+            rows = 3
+            columns = len(wordslists) / rows
+        ax = fig.add_subplot(rows, columns, nr+1)
+        for word, x, y in zip(words, xpositions, ypositions):
+            lemma = word.split('_')[0].replace('::', ' ')
+            bias = 0.05
+            if word == focusword:
+                ax.scatter(x, y, 200, marker='*', color='red')
+                ax.annotate(lemma, xy=(x-bias, y), size='x-large', weight='bold', color='red', alpha=0.8)
+            else:
+                ax.scatter(x, y, 150, marker='.', color='green')
+                ax.annotate(lemma, xy=(x-bias, y), size='large', alpha=0.8)
+
+        ax.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=False)
+        ax.tick_params(axis='y', which='both', left=False, right=False, labelleft=False)
+        ax.set_title('"%s" в %s' % (focusword.split('_')[0].replace('::', ' '), usermodel))
+
+    plt.show()
+
+
+def wordvectors(words, emb_model):
+    matrix = np.zeros((len(words), emb_model.vector_size))
+    for i in range(len(words)):
+        matrix[i, :] = emb_model[words[i]]
+    return matrix
+

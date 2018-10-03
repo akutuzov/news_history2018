@@ -1,5 +1,7 @@
+numpy
 gensim
 logging
 argparse
 matplotlib
 prettytable
+sklearn
