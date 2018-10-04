@@ -5,3 +5,5 @@ argparse
 matplotlib
 prettytable
 sklearn
+pandas
+keras

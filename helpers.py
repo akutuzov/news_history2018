@@ -75,16 +75,16 @@ def visual(focusword, wordslists, matrices, usermodels):
         else:
             rows = 3
             columns = len(wordslists) / rows
-        ax = fig.add_subplot(rows, columns, nr+1)
+        ax = fig.add_subplot(rows, columns, nr + 1)
         for word, x, y in zip(words, xpositions, ypositions):
             lemma = word.split('_')[0].replace('::', ' ')
             bias = 0.05
             if word == focusword:
                 ax.scatter(x, y, 200, marker='*', color='red')
-                ax.annotate(lemma, xy=(x-bias, y), size='x-large', weight='bold', color='red', alpha=0.8)
+                ax.annotate(lemma, xy=(x - bias, y), size='x-large', weight='bold', color='red', alpha=0.8)
             else:
                 ax.scatter(x, y, 150, marker='.', color='green')
-                ax.annotate(lemma, xy=(x-bias, y), size='large', alpha=0.8)
+                ax.annotate(lemma, xy=(x - bias, y), size='large', alpha=0.8)
 
         ax.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=False)
         ax.tick_params(axis='y', which='both', left=False, right=False, labelleft=False)
@@ -99,3 +99,9 @@ def wordvectors(words, emb_model):
         matrix[i, :] = emb_model[words[i]]
     return matrix
 
+
+def get_number(word, vocab=None):
+    if word in vocab:
+        return vocab[word].index
+    else:
+        return 0
