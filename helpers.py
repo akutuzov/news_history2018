@@ -24,6 +24,7 @@ def load_model(embeddings_file):
 
 
 def jaccard(list0, list1):
+    # Близость двух массивов по коэффициенту Жаккара
     set_0 = set(list0)
     set_1 = set(list1)
     n = len(set_0.intersection(set_1))
@@ -31,6 +32,7 @@ def jaccard(list0, list1):
 
 
 def jaccard_f(word, models, row=10):
+    # Сравнение слова в нескольких моделях через сравнение его ближайших ассоциатов
     associations = OrderedDict()
     similarities = {word: OrderedDict()}
     previous_state = None
@@ -46,6 +48,7 @@ def jaccard_f(word, models, row=10):
 
 
 def plot_diffs(years, diffs, word, savefigure=False):
+    # Рисуем график изменений значения слова
     plt.figure(1)
     plt.plot(years, diffs, 'bo--', linewidth=2)
     plt.xlabel('Годы')
@@ -58,6 +61,7 @@ def plot_diffs(years, diffs, word, savefigure=False):
 
 
 def visual(focusword, wordslists, matrices, usermodels):
+    # Рисуем двумерные проекции векторов слов и их ассоциатов
     fig = plt.figure()
     for words, matrix, usermodel, nr in zip(wordslists, matrices, usermodels, range(len(wordslists))):
         pca = PCA(n_components=2)
@@ -94,6 +98,7 @@ def visual(focusword, wordslists, matrices, usermodels):
 
 
 def wordvectors(words, emb_model):
+    # Функция получения векторов слов из модели
     matrix = np.zeros((len(words), emb_model.vector_size))
     for i in range(len(words)):
         matrix[i, :] = emb_model[words[i]]
@@ -101,6 +106,7 @@ def wordvectors(words, emb_model):
 
 
 def get_number(word, vocab=None):
+    # Функция получения номера слова в словаре модели
     if word in vocab:
         return vocab[word].index
     else:
