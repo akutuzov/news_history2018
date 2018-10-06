@@ -11,6 +11,7 @@ import pandas as pd
 from keras import backend, preprocessing
 from keras.layers import Dense, Input, LSTM, Bidirectional
 from keras.models import Model
+from keras.models import load_model as load_keras_model
 from keras.utils import plot_model
 from keras.utils import to_categorical
 from sklearn.metrics import classification_report
@@ -44,7 +45,7 @@ if __name__ == '__main__':
     vocabulary = emb_model.vocab
     embedding_layer = emb_model.get_keras_embedding()
 
-    (x_train, y_train) = train_dataset['text'], train_dataset['label']
+    (x_train, y_train) = train_dataset['tokens'], train_dataset['label']
 
     logger.info('%d обучающих текстов' % len(x_train))
 
@@ -132,7 +133,18 @@ if __name__ == '__main__':
     logger.info('Macro-F1 на оценочном датасете: %s' % "{0:.4f}".format(fscore))
 
     # Сохранение модели в файл
-    # model_filename = run_name + '.h5'
-    # model.save(model_filename)
-    # print('Модель сохранена в', model_filename)
+    model_filename = run_name + '.h5'
+    model.save(model_filename)
+    print('Модель сохранена в', model_filename)
+    
+    # Загрузка модели
+    print('Загрузка готовой модели')
+    model = load_keras_modelmodel(model_filename)
+    text = input('Введите ваш текст: ')
+    x = [[get_number(w, vocab=vocabulary) for w in text.split()]]
+    vectorized = preprocessing.sequence.pad_sequences(
+        x, maxlen=max_seq_length, truncating='post', padding='post')
+    pred = model.predict(vectorized)
+    print(np.around(pred))
+    
     backend.clear_session()
