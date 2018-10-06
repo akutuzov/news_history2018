@@ -45,7 +45,7 @@ if __name__ == '__main__':
     vocabulary = emb_model.vocab
     embedding_layer = emb_model.get_keras_embedding()
 
-    (x_train, y_train) = train_dataset['tokens'], train_dataset['label']
+    (x_train, y_train) = train_dataset['text'], train_dataset['label']
 
     logger.info('%d обучающих текстов' % len(x_train))
 
