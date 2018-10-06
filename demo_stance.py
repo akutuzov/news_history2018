@@ -2,20 +2,10 @@
 
 import argparse
 import logging
-import random
-import time
 
 import numpy as np
-import pandas as pd
-from keras.callbacks import TensorBoard, EarlyStopping
-from keras import backend, preprocessing
-from keras.layers import Dense, Input, LSTM, Bidirectional
-from keras.models import Model
+from keras import preprocessing
 from keras.models import load_model as load_keras_model
-from keras.utils import plot_model
-from keras.utils import to_categorical
-from sklearn.metrics import classification_report
-from sklearn.metrics import precision_recall_fscore_support
 
 from helpers import load_model, get_number
 
@@ -32,7 +22,7 @@ if __name__ == '__main__':
 
     model_filename = args.modelfile
     embeddings_file = args.embeddings
-    
+
     logger.info('Загружаем дистрибутивную модель...')
     emb_model = load_model(embeddings_file)
     logger.info('Загрузка дистрибутивной модели завершена')
@@ -40,12 +30,14 @@ if __name__ == '__main__':
     embedding_layer = emb_model.get_keras_embedding()
 
     classes = ['0', '1', '2']
-   
+
     max_seq_length = 20  # Паддинг: приводим все документы к этой длине (лишнее обрезаем, недостающее заполняем нулями)
 
-    #Загрузка модели
+    # Загрузка модели
     print('Загрузка готовой модели')
     model = load_keras_model(model_filename)
+    print(model.summary())
+
     while True:
         text = input('Введите ваш текст: ')
         x = [[get_number(w, vocab=vocabulary) for w in text.split()]]
@@ -56,4 +48,3 @@ if __name__ == '__main__':
         cl = [classes[np.argmax(pred)] for pr in pred]
         print(cl)
 
-    backend.clear_session()
