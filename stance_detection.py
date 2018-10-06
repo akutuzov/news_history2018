@@ -8,6 +8,7 @@ import time
 
 import numpy as np
 import pandas as pd
+from keras.callbacks import TensorBoard, EarlyStopping
 from keras import backend, preprocessing
 from keras.layers import Dense, Input, LSTM, Bidirectional
 from keras.models import Model
@@ -95,8 +96,8 @@ if __name__ == '__main__':
 
     training = embedding_layer(word_input)  # Заменяем идентификаторы слов на их эмбеддинги
 
-    lstm = LSTM(64)  # Определяем размерность выхода LSTM (https://keras.io/layers/recurrent/#LSTM)
-    training = Bidirectional(lstm, name='LSTM')(training)  # Проходимся по последовательности двунаправленной LSTM
+    lstm = LSTM(128, name='LSTM')  # Определяем размерность выхода LSTM (https://keras.io/layers/recurrent/#LSTM)
+    training = lstm(training)  # Проходимся по последовательности двунаправленной LSTM
 
     output = Dense(num_classes, activation='softmax', name='Output')(training)  # Выходной слой, предсказывает классы
 
@@ -109,10 +110,13 @@ if __name__ == '__main__':
 
     val_split = 0.1  # Какая часть данных будет использоваться в качестве оценочного датасета (validation data)
 
+    earlystopping = EarlyStopping(monitor='val_acc', min_delta=0.0001, patience=3, verbose=1, mode='max')
+
     # Обучаем скомпилированную модель на наших данных
     # Детали на https://keras.io/getting-started/functional-api-guide/
     start = time.time()
-    history = model.fit(vectorized_train, y_train, epochs=10, verbose=1, validation_split=val_split, batch_size=8)
+    history = model.fit(vectorized_train, y_train, epochs=20, verbose=1, validation_split=val_split,
+            batch_size=4, callbacks=[earlystopping])
     end = time.time()
     training_time = int(end - start)
     logger.info('Обучение заняло %d секунд' % training_time)
@@ -145,7 +149,7 @@ if __name__ == '__main__':
     model_filename = run_name + '.h5'
     model.save(model_filename)
     print('Модель сохранена в', model_filename)
-    
+
     #Загрузка модели
     print('Загрузка готовой модели')
     model = load_keras_model(model_filename)
@@ -154,8 +158,9 @@ if __name__ == '__main__':
         x = [[get_number(w, vocab=vocabulary) for w in text.split()]]
         vectorized = preprocessing.sequence.pad_sequences(
             x, maxlen=max_seq_length, truncating='post', padding='post')
-        pred = np.around(model.predict(vectorized))
+        pred = model.predict(vectorized)
+        print(pred)
         cl = [classes[np.argmax(pred)] for pr in pred]
         print(cl)
-    
+
     backend.clear_session()
