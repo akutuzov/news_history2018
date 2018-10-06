@@ -133,19 +133,19 @@ if __name__ == '__main__':
     logger.info('Macro-F1 на оценочном датасете: %s' % "{0:.4f}".format(fscore))
 
     # Сохранение модели в файл
-    model_filename = run_name + '.h5'
-    model.save(model_filename)
-    print('Модель сохранена в', model_filename)
+    # model_filename = run_name + '.h5'
+    # model.save(model_filename)
+    # print('Модель сохранена в', model_filename)
     
     # Загрузка модели
-    print('Загрузка готовой модели')
-    model = load_keras_model(model_filename)
-    text = input('Введите ваш текст: ')
-    x = [[get_number(w, vocab=vocabulary) for w in text.split()]]
-    vectorized = preprocessing.sequence.pad_sequences(
-        x, maxlen=max_seq_length, truncating='post', padding='post')
-    pred = np.around(model.predict(vectorized))
-    cl = [classes[np.argmax(pred)] for pr in pred]
-    print(cl)
+    # print('Загрузка готовой модели')
+    # model = load_keras_model(model_filename)
+    # text = input('Введите ваш текст: ')
+    # x = [[get_number(w, vocab=vocabulary) for w in text.split()]]
+    # vectorized = preprocessing.sequence.pad_sequences(
+    #     x, maxlen=max_seq_length, truncating='post', padding='post')
+    # pred = np.around(model.predict(vectorized))
+    # cl = [classes[np.argmax(pred)] for pr in pred]
+    # print(cl)
     
     backend.clear_session()
