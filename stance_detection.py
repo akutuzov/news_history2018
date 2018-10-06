@@ -48,7 +48,16 @@ if __name__ == '__main__':
     (x_train, y_train) = train_dataset['text'], train_dataset['label']
 
     logger.info('%d обучающих текстов' % len(x_train))
-
+    i = 0
+    to_drop = []
+    for it in x_train.str.split():
+       if type(it) == float:
+           to_drop.append(i)
+       i += 1
+       
+    for it in to_drop:
+        x_train = x_train.drop(it)
+        y_train = y_train.drop(it)
     logger.info('Средняя длина обучающего текста: %s слов'
                 % "{0:.1f}".format(np.mean(list(map(len, x_train.str.split()))), 1))
 
@@ -132,20 +141,21 @@ if __name__ == '__main__':
     fscore = precision_recall_fscore_support(y_test_real, predictions, average='macro')[2]
     logger.info('Macro-F1 на оценочном датасете: %s' % "{0:.4f}".format(fscore))
 
-    # Сохранение модели в файл
-    # model_filename = run_name + '.h5'
-    # model.save(model_filename)
-    # print('Модель сохранена в', model_filename)
+    #Сохранение модели в файл
+    model_filename = run_name + '.h5'
+    model.save(model_filename)
+    print('Модель сохранена в', model_filename)
     
-    # Загрузка модели
-    # print('Загрузка готовой модели')
-    # model = load_keras_model(model_filename)
-    # text = input('Введите ваш текст: ')
-    # x = [[get_number(w, vocab=vocabulary) for w in text.split()]]
-    # vectorized = preprocessing.sequence.pad_sequences(
-    #     x, maxlen=max_seq_length, truncating='post', padding='post')
-    # pred = np.around(model.predict(vectorized))
-    # cl = [classes[np.argmax(pred)] for pr in pred]
-    # print(cl)
+    #Загрузка модели
+    print('Загрузка готовой модели')
+    model = load_keras_model(model_filename)
+    while True:
+        text = input('Введите ваш текст: ')
+        x = [[get_number(w, vocab=vocabulary) for w in text.split()]]
+        vectorized = preprocessing.sequence.pad_sequences(
+            x, maxlen=max_seq_length, truncating='post', padding='post')
+        pred = np.around(model.predict(vectorized))
+        cl = [classes[np.argmax(pred)] for pr in pred]
+        print(cl)
     
     backend.clear_session()
