@@ -144,7 +144,8 @@ if __name__ == '__main__':
     x = [[get_number(w, vocab=vocabulary) for w in text.split()]]
     vectorized = preprocessing.sequence.pad_sequences(
         x, maxlen=max_seq_length, truncating='post', padding='post')
-    pred = model.predict(vectorized)
-    print(np.around(pred))
+    pred = np.around(model.predict(vectorized))
+    cl = [classes[np.argmax(pred)] for pr in pred]
+    print(cl)
     
     backend.clear_session()
