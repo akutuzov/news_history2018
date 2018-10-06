@@ -139,7 +139,7 @@ if __name__ == '__main__':
     
     # Загрузка модели
     print('Загрузка готовой модели')
-    model = load_keras_modelmodel(model_filename)
+    model = load_keras_model(model_filename)
     text = input('Введите ваш текст: ')
     x = [[get_number(w, vocab=vocabulary) for w in text.split()]]
     vectorized = preprocessing.sequence.pad_sequences(
